@@ -1,0 +1,61 @@
+import { validationResult } from "express-validator";
+import { ConnectionRequest } from "../models/connectionRequest.model.js";
+import httpStatus from "http-status";
+import { User } from "../models/user.models.js";
+
+export const sendRequest = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(httpStatus.BAD_REQUEST).json({ message: errors });
+    }
+
+    const fromUserId = req.user?._id;
+    const { toUserId, status } = req.params;
+
+    const sameId = fromUserId.toString() === toUserId.toString();
+
+    if (sameId) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Cannot send connection request to yourself!" });
+    }
+
+    const toUserExists = await User.findById(toUserId);
+
+    if (!toUserExists) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "User not found!" });
+    }
+
+    const connectionRequestExists = await ConnectionRequest.findOne({
+      $or: [
+        { fromUserId, toUserId },
+        { fromUserId: toUserId, toUserId: fromUserId },
+      ],
+    });
+
+    if (connectionRequestExists) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Connection request already exists!" });
+    }
+
+    const connectionSent = await ConnectionRequest.create({
+      fromUserId,
+      status,
+      toUserId,
+    });
+
+    res.status(httpStatus.OK).json({
+      message: "Connection request sent successfully!",
+      request: connectionSent,
+    });
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Something went wrong!", error: error.message });
+  }
+};
