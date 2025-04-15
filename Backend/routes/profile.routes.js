@@ -8,7 +8,7 @@ import {
   deleteProfile,
 } from "../controllers/profile.controllers.js";
 
-router.get("/view/:id", authUser, getProfile);
+router.get("/view", authUser, getProfile);
 
 router.patch("/edit/:id", authUser, updateProfileValidations, updateProfile);
 

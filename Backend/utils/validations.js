@@ -112,3 +112,8 @@ export const reviewRequestValidations = [
     .withMessage("Invalid status. Allowed status: accepted, rejected!"),
   param("fromUserId").isMongoId().withMessage("Invalid id to send a request!"),
 ];
+
+export const feedValidations = [
+  param("pageNo").isInt({ min: 1 }),
+  param("limit").isInt({ min: 1 }),
+];
