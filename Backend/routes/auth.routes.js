@@ -6,7 +6,7 @@ import {
   refreshAccessToken,
   signUp,
   updatePassword,
-} from "../controllers/user.controllers.js";
+} from "../controllers/auth.controllers.js";
 import {
   logInValidations,
   signUpValidations,

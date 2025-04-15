@@ -5,7 +5,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 
 import connectToDB from "./config/database.js";
-import userRoutes from "./routes/user.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import requestRoutes  from "./routes/request.routes.js"
 
@@ -15,7 +15,7 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
-app.use("/users", userRoutes);
+app.use("/", authRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/requests", requestRoutes);
 
