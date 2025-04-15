@@ -59,3 +59,40 @@ export const sendRequest = async (req, res) => {
       .json({ message: "Something went wrong!", error: error.message });
   }
 };
+
+export const reviewRequest = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(httpStatus.BAD_REQUEST).json({ message: errors });
+    }
+
+    const { status, fromUserId } = req.params;
+    const loggedInUser = req.user;
+
+    const connectionRequest = await ConnectionRequest.findOne({
+      fromUserId,
+      toUserId: loggedInUser._id,
+      status: "interested",
+    });
+
+    if (!connectionRequest) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "Connection request not found" });
+    }
+
+    connectionRequest.status = status;
+
+    const data = await connectionRequest.save();
+
+    res
+      .status(httpStatus.OK)
+      .json({ message: `The request has been ${status}`, data: data });
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: "Something went wrong!", error: error.message });
+  }
+};

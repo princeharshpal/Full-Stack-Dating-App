@@ -104,3 +104,11 @@ export const connectionRequestValidations = [
     .withMessage("Invalid status. Allowed status: interested, ignored!"),
   param("toUserId").isMongoId().withMessage("Invalid id to send a request!"),
 ];
+
+export const reviewRequestValidations = [
+  param("status")
+    .customSanitizer((value) => value.toLowerCase())
+    .isIn(["accepted", "rejected"])
+    .withMessage("Invalid status. Allowed status: accepted, rejected!"),
+  param("fromUserId").isMongoId().withMessage("Invalid id to send a request!"),
+];
