@@ -1,10 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
     <div className="navbar bg-base-300 shadow-sm">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">Lets Connect . . .</a>
+        <Link to={"/"} className="btn btn-ghost text-xl">Lets Connect . . .</Link>
       </div>
 
       <div className="flex gap-2 pr-4">

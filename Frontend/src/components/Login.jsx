@@ -1,9 +1,113 @@
-import React from 'react'
+import React from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const Login = () => {
-  return (
-    <div>Login</div>
-  )
-}
+  const validationSchema = yup
+    .object({
+      email: yup
+        .string()
+        .email("Invalid email address!")
+        .required("Email is required!"),
+      password: yup
+        .string()
+        .required("Password is required!")
+        .min(6, "Password should be at least 6 characters long!")
+        .matches(/[A-Z]/, "Password must have at least 1 uppercase letter!")
+        .matches(/[a-z]/, "Password must have at least 1 lowercase letter!")
+        .matches(/[0-9]/, "Password must have at least 1 number!")
+        .matches(
+          /[~`!@#$%^&*()_=+]/,
+          "Password must have at least 1 special character!"
+        ),
+    })
+    .required();
 
-export default Login
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    reset,
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      await validationSchema.validate(data, { abortEarly: false });
+      console.log("Form submitted successfully", data);
+    } catch (err) {
+      if (err.inner) {
+        err.inner.forEach((validationError) => {
+          setError(validationError.path, {
+            type: "manual",
+            message: validationError.message,
+          });
+        });
+      } else {
+        console.error(err);
+      }
+    }
+  };
+
+  return (
+    <div className="w-full h-full flex justify-center items-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="fieldset w-xs bg-base-100 border border-base-100 p-4 rounded-box"
+      >
+        <p className="text-center font-semibold text-xl mb-2">Log in</p>
+
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <label htmlFor="email" className="fieldset-label">
+              Email
+            </label>
+            <input
+              id="email"
+              className="input focus:outline-none"
+              placeholder="ex@example.com"
+              {...register("email")}
+            />
+
+            {errors.email && (
+              <p className="text-xs text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="password" className="fieldset-label">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              className="input focus:outline-none"
+              placeholder="123Example@"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="text-xs text-red-500">{errors.password.message}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full btn btn-soft btn-info"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Log in"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
