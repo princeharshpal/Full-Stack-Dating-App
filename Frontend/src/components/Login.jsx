@@ -2,6 +2,7 @@ import React from "react";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 
 const Login = () => {
   const validationSchema = yup
@@ -41,7 +42,16 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       await validationSchema.validate(data, { abortEarly: false });
-      console.log("Form submitted successfully", data);
+
+      const res = await axios.post(`${import.meta.env.VITE_URL}/login`, data, {
+        withCredentials: true,
+      });
+
+      if (res.status === 200) {
+        reset();
+      }
+
+      console.log(res);
     } catch (err) {
       if (err.inner) {
         err.inner.forEach((validationError) => {
