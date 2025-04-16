@@ -65,7 +65,7 @@ export const logInUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(httpStatus.UNAUTHORIZED).json({
@@ -80,9 +80,7 @@ export const logInUser = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    const loggedInUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
+    const loggedInUser = await User.findById(user._id);
 
     res
       .status(httpStatus.OK)
