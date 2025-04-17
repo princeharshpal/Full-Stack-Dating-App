@@ -1,25 +1,20 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainLayout from "./Layout/MainLayout";
-import Login from "./components/Login";
-import SignUp from "./components/SignUp";
-import Home from "./components/Home";
+import { RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store";
+import router from "./Router";
 
 const App = () => {
   return (
     <>
       <Provider store={store}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <RouterProvider
+          router={router}
+          fallbackElement={
+            <div className="w-full h-screen flex justify-center items-center">
+              <span className="loading loading-spinner loading-lg text-info"></span>
+            </div>
+          }
+        />
       </Provider>
     </>
   );

@@ -5,10 +5,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addUser } from "../store/userSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const validationSchema = yup
     .object({
@@ -51,9 +52,14 @@ const Login = () => {
       const res = await axios.post(`${import.meta.env.VITE_URL}/login`, data, {
         withCredentials: true,
       });
+      console.log(res);
 
       if (res.status === 200) {
         dispatch(addUser(res.data.user));
+        navigate("/feed");
+        reset();
+      } else if (res.status === 401) {
+        console.log("Invalid email or password");
         reset();
       }
     } catch (err) {

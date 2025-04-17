@@ -1,9 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLoaderData } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { addUser } from "../store/userSlice";
 
 const MainLayout = () => {
+  const user = useLoaderData() || null;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      dispatch(addUser(user));
+    }
+  }, [user, dispatch]);
+
   return (
     <>
       <Navbar />
@@ -13,6 +25,23 @@ const MainLayout = () => {
       <Footer />
     </>
   );
+};
+
+MainLayout.loader = async () => {
+  console.log("MainLayout.loader called");
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_URL}/profiles/view`, {
+      withCredentials: true,
+    });
+
+    if (res.status === 200) {
+      return res.data.user;
+    }
+    return null;
+  } catch (error) {
+    console.log("Layout loader error", error);
+    return null;
+  }
 };
 
 export default MainLayout;
