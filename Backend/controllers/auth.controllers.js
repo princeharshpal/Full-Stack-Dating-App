@@ -16,10 +16,7 @@ const generateTokens = (payload) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      message: "Something went wrong while generating tokens!",
-      error: error.message,
-    });
+    throw new Error("Error generating tokens: " + error.message);
   }
 };
 
@@ -73,7 +70,7 @@ export const logInUser = async (req, res) => {
       });
     }
 
-    const { accessToken, refreshToken } = await generateTokens({
+    const { accessToken, refreshToken } = generateTokens({
       _id: user._id,
     });
 
@@ -142,9 +139,12 @@ export const refreshAccessToken = async (req, res) => {
         .json({ message: "Unauthorized request!" });
     }
 
-    const id = jwt.verify(incomingRefreshToken, REFRESH_TOKEN_SECRET);
+    const decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
 
-    const user = await User.findById(id);
+    const user = await User.findById(decoded._id).select("+refreshToken");
 
     if (!user) {
       return res
@@ -158,17 +158,19 @@ export const refreshAccessToken = async (req, res) => {
         .json({ message: "Refresh token is expired or used!" });
     }
 
-    const { newAccessToken: accessToken, newRefreshToken: refreshToken } =
-      await generateTokens(user._id);
+    const { accessToken, refreshToken } = generateTokens({ _id: user._id });
+
+    user.refreshToken = refreshToken;
+    await user.save();
 
     res
       .status(httpStatus.OK)
-      .cookie("accessToken", newAccessToken, {
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .cookie("refreshToken", newRefreshToken, {
+      .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         maxAge: 10 * 24 * 60 * 60 * 1000,
@@ -185,7 +187,7 @@ export const updatePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id).select("+password");
 
     const correctOldPass = await bcrypt.compare(oldPassword, user.password);
 
