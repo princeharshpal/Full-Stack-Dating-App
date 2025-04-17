@@ -3,8 +3,13 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { addUser } from "../store/userSlice";
+import { Link } from "react-router-dom";
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const validationSchema = yup
     .object({
       email: yup
@@ -48,10 +53,9 @@ const Login = () => {
       });
 
       if (res.status === 200) {
+        dispatch(addUser(res.data.user));
         reset();
       }
-
-      console.log(res);
     } catch (err) {
       if (err.inner) {
         err.inner.forEach((validationError) => {
@@ -114,6 +118,26 @@ const Login = () => {
           >
             {isSubmitting ? "Submitting..." : "Log in"}
           </button>
+        </div>
+
+        <div className="text-center mt-4 space-y-2">
+          <p className="text-sm">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-blue-500 hover:underline">
+              Sign up
+            </Link>
+          </p>
+
+          <p className="text-xs text-gray-500">
+            By logging in, you agree to our{" "}
+            <Link to="#" className="underline text-blue-400">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="#" className="underline text-blue-400">
+              Privacy Policy
+            </Link>
+          </p>
         </div>
       </form>
     </div>
