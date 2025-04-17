@@ -28,7 +28,6 @@ const MainLayout = () => {
 };
 
 MainLayout.loader = async () => {
-  console.log("MainLayout.loader called");
   try {
     const res = await axios.get(`${import.meta.env.VITE_URL}/profiles/view`, {
       withCredentials: true,
@@ -36,8 +35,7 @@ MainLayout.loader = async () => {
 
     if (res.status === 200) {
       return res.data.user;
-    }
-    return null;
+    } else return null;
   } catch (error) {
     console.log("Layout loader error", error);
     return null;

@@ -3,6 +3,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeUser } from "../store/userSlice";
+import { removeFeed } from "../store/feedSlice";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -24,6 +25,7 @@ const Navbar = () => {
       if (res.status === 200) {
         console.log(res.data.message);
         dispatch(removeUser());
+        dispatch(removeFeed());
         navigate("/");
       }
     } catch (error) {

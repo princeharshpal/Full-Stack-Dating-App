@@ -52,7 +52,6 @@ const Login = () => {
       const res = await axios.post(`${import.meta.env.VITE_URL}/login`, data, {
         withCredentials: true,
       });
-      console.log(res);
 
       if (res.status === 200) {
         dispatch(addUser(res.data.user));

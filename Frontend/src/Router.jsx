@@ -8,7 +8,7 @@ import MainLayout from "./Layout/MainLayout";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import Home from "./components/Home";
-import Feed from "./components/Feed";
+import Feed from "./components/Feed/Feed";
 import Profile from "./components/Profile";
 
 const router = createBrowserRouter(
@@ -20,7 +20,7 @@ const router = createBrowserRouter(
       <Route path="/feed" loader={Feed.loader} element={<Feed />} />
       <Route
         path="/profiles/view"
-        //   loader={Feed.loader}
+          loader={Feed.loader}
         element={<Profile />}
       />
     </Route>
