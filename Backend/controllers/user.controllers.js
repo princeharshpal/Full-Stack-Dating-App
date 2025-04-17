@@ -61,8 +61,8 @@ export const getAllConnections = async (req, res) => {
 export const getFeed = async (req, res) => {
   try {
     const loggedInUser = req?.user;
-    const { pageNo } = req?.params || 1;
-    const { limit } = req?.params || 10;
+    let pageNo = parseInt(req.params.pageNo) || 1;
+    let limit = parseInt(req.params.limit) || 10;
     limit = limit > 50 ? 50 : limit;
 
     const skip = (pageNo - 1) * limit;
