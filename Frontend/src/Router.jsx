@@ -9,7 +9,7 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import Home from "./components/Home";
 import Feed from "./components/Feed/Feed";
-import Profile from "./components/Profile";
+import Profile from "./components/Profile/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,11 +18,7 @@ const router = createBrowserRouter(
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/feed" loader={Feed.loader} element={<Feed />} />
-      <Route
-        path="/profiles/view"
-          loader={Feed.loader}
-        element={<Profile />}
-      />
+      <Route path="/profiles/view" loader={Feed.loader} element={<Profile />} />
     </Route>
   )
 );

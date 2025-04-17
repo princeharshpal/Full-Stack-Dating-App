@@ -3,8 +3,8 @@ const Card = ({ user }) => {
 
   return (
     <div className="flex justify-center">
-      <div className="card bg-base-100 w-96 shadow-sm">
-        <figure>
+      <div className="card bg-base-100 w-96 shadow-sm mt-2 overflow-hidden">
+        <figure className="h-98 w-full">
           <img
             className="object-center object-cover"
             src={photoUrl}
@@ -23,7 +23,7 @@ const Card = ({ user }) => {
             {age}
           </p>
 
-          <p>{about || "No description available."}</p>
+          <p className="text-wrap">{about || "No description available."}</p>
 
           <div className="card-actions justify-center gap-5 mt-2">
             <div className="btn btn-primary">Ignore</div>

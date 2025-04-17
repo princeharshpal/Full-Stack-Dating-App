@@ -2,11 +2,12 @@ import { RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import router from "./Router";
-
+import Toast from "./components/Toast";
 const App = () => {
   return (
     <>
       <Provider store={store}>
+        <Toast />
         <RouterProvider
           router={router}
           fallbackElement={

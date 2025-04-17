@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeUser } from "../store/userSlice";
 import { removeFeed } from "../store/feedSlice";
+import { showToast } from "../store/toastSlice";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -26,10 +27,17 @@ const Navbar = () => {
         console.log(res.data.message);
         dispatch(removeUser());
         dispatch(removeFeed());
+        dispatch(showToast({ message: res.data.message, type: "success" }));
         navigate("/");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      dispatch(
+        showToast({
+          message: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      );
     }
   };
 

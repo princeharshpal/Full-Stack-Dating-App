@@ -6,6 +6,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addUser } from "../store/userSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { showToast } from "../store/toastSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -55,14 +56,23 @@ const Login = () => {
 
       if (res.status === 200) {
         dispatch(addUser(res.data.user));
+
+        dispatch(showToast({ message: res.data.message, type: "success" }));
+
         navigate("/feed");
-        reset();
-      } else if (res.status === 401) {
-        console.log("Invalid email or password");
+
         reset();
       }
     } catch (err) {
-      if (err.inner) {
+      if (err.response && err.response.status === 401) {
+        dispatch(
+          showToast({
+            message: err.response.data.message || "Invalid email or password",
+            type: "error",
+          })
+        );
+        reset();
+      } else if (err.inner) {
         err.inner.forEach((validationError) => {
           setError(validationError.path, {
             type: "manual",
@@ -70,7 +80,13 @@ const Login = () => {
           });
         });
       } else {
-        console.error(err);
+        console.error("Unexpected error:", err);
+        dispatch(
+          showToast({
+            message: "Something went wrong. Please try again.",
+            type: "error",
+          })
+        );
       }
     }
   };

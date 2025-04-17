@@ -18,7 +18,7 @@ const Feed = () => {
   return (
     <div>
       {/* {feed?.data?.map((item, idx) => { */}
-      return <Card key={""} user={feed.data[0]} />{/* })} */}
+      <Card key={""} user={feed.data[0]} />{/* })} */}
     </div>
   );
 };
