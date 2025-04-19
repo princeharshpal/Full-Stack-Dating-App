@@ -27,7 +27,7 @@ const Toast = () => {
 
   return (
     <div
-      className={`toast toast-top toast-center rounded-md px-4
+      className={`toast toast-top toast-end mt-20 z-50 rounded-md px-4
      py-2 ${getColor()}`}
     >
       {message}

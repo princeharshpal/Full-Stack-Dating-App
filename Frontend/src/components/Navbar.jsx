@@ -24,7 +24,6 @@ const Navbar = () => {
       );
 
       if (res.status === 200) {
-        console.log(res.data.message);
         dispatch(removeUser());
         dispatch(removeFeed());
         dispatch(showToast({ message: res.data.message, type: "success" }));
@@ -71,9 +70,8 @@ const Navbar = () => {
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
               >
                 <li>
-                  <Link to={"/profiles/view"} className="justify-between">
+                  <Link to={"/profile"}>
                     Profile
-                    <span className="badge">New</span>
                   </Link>
                 </li>
                 <li>
