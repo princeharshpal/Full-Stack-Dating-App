@@ -34,7 +34,7 @@ const Edit = ({ user }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
     reset,
   } = useForm({
@@ -173,15 +173,13 @@ const Edit = ({ user }) => {
             />
           </div>
 
-          <div className="flex gap-4 mt-5">
-            <button type="submit" className="btn btn-outline btn-warning w-40">
-              Save
-            </button>
-
-            <button type="button" className="btn btn-error w-40">
-              Cancel
-            </button>
-          </div>
+          <button
+            disabled={!isDirty}
+            type="submit"
+            className="btn btn-warning w-full mt-2"
+          >
+            Save
+          </button>
         </form>
       </div>
     </div>
