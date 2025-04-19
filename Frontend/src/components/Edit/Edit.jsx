@@ -167,6 +167,7 @@ const Edit = ({ user }) => {
             </label>
             <textarea
               id="about"
+              rows={3}
               {...register("about")}
               className="border border-gray-600 rounded-md px-2 py-1 outline-none"
             />
