@@ -40,14 +40,16 @@ export const updateProfile = async (req, res) => {
 
     const { firstName, lastName, about, photoUrl } = req.body;
 
-    await User.findByIdAndUpdate(id, {
+    const updateProfile = await User.findByIdAndUpdate(id, {
       firstName,
       lastName,
       about,
       photoUrl,
     });
 
-    res.status(httpStatus.OK).json({ message: "User updated successfully!" });
+    res
+      .status(httpStatus.OK)
+      .json({ message: "User updated successfully!", user: updateProfile });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)

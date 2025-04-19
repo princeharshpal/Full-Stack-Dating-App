@@ -76,7 +76,7 @@ export const updateProfileValidations = [
   body("photoUrl")
     .isURL()
     .withMessage("Invalid URL!")
-    .isLength({ max: 200 })
+    .isLength({ max: 2048 })
     .withMessage("Photo url is too long"),
 ];
 
