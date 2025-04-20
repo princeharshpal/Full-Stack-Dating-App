@@ -3,7 +3,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeUser } from "../store/userSlice";
-import { removeFeed } from "../store/feedSlice";
 import { showToast } from "../store/toastSlice";
 
 const Navbar = () => {
@@ -25,7 +24,6 @@ const Navbar = () => {
 
       if (res.status === 200) {
         dispatch(removeUser());
-        dispatch(removeFeed());
         dispatch(showToast({ message: res.data.message, type: "success" }));
         navigate("/");
       }
@@ -43,7 +41,7 @@ const Navbar = () => {
   return (
     <div className="navbar bg-base-300 shadow-sm">
       <div className="flex-1">
-        <Link to={"/"} className="btn btn-ghost text-xl">
+        <Link to={"/feed"} className="btn btn-ghost text-xl">
           Lets Connect . . .
         </Link>
       </div>

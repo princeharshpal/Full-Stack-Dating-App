@@ -50,7 +50,7 @@ export const sendRequest = async (req, res) => {
     });
 
     res.status(httpStatus.OK).json({
-      message: "Connection request sent successfully!",
+      message: `Connection request ${status}!`,
       request: connectionSent,
     });
   } catch (error) {
