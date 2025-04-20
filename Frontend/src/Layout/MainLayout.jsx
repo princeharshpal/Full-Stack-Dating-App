@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Outlet, useLoaderData } from "react-router-dom";
+import { Outlet, useLoaderData, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { addUser } from "../store/userSlice";
@@ -9,6 +9,7 @@ import { addUser } from "../store/userSlice";
 const MainLayout = () => {
   const user = useLoaderData() || null;
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     if (user) {
@@ -19,7 +20,11 @@ const MainLayout = () => {
   return (
     <>
       <Navbar />
-      <div className="w-full min-h-[90vh] bg-base-200 p-7">
+      <div
+        className={`${
+          location.pathname === "/" ? "" : "w-full min-h-[90vh] bg-base-200 p-7"
+        }`}
+      >
         <Outlet />
       </div>
       <Footer />

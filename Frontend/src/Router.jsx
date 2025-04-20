@@ -19,7 +19,9 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/feed" loader={Feed.loader} element={<Feed />} />
+      <Route path="/feed" 
+      // loader={Feed.loader} 
+      element={<Feed />} />
       <Route path="/profile" loader={Profile.loader} element={<Profile />} />
       <Route
         path="/connections"

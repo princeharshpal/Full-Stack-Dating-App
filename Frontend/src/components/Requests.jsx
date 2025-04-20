@@ -69,13 +69,15 @@ const Requests = () => {
                 <h2 className="text-xl font-semibold">
                   {request.firstName} {request.lastName}
                 </h2>
+
                 <p>
                   {request.gender}, {request.age}
                 </p>
-                <p>{request.about || "No about available"}</p>
+
+                <p className="w-11/12 line-clamp-3">{request.about || "No about available"}</p>
               </div>
 
-              <div className="space-x-3">
+              <div className="space-x-3 flex items-center">
                 <button
                   onClick={() => handleRequest("accepted", request._id)}
                   className="btn btn-success"
