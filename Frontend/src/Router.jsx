@@ -26,7 +26,9 @@ const router = createBrowserRouter(
         loader={Connections.loader}
         element={<Connections />}
       />
-      <Route path="/requests" loader={Requests.loader} element={<Requests />} />
+      <Route path="/requests" 
+      // loader={Requests.loader}
+       element={<Requests />} />
     </Route>
   )
 );
