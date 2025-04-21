@@ -12,6 +12,6 @@ router.get("/view", authUser, getProfile);
 
 router.patch("/edit/:id", authUser, updateProfileValidations, updateProfile);
 
-router.delete("/:id", authUser, deleteProfile);
+router.delete("/delete", authUser, deleteProfile);
 
 export default router;

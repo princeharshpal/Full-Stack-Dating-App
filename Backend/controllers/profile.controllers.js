@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import { User } from "../models/user.models.js";
 import { validationResult } from "express-validator";
+import { ConnectionRequest } from "../models/connectionRequest.model.js";
 
 export const getProfile = async (req, res) => {
   try {
@@ -16,14 +17,26 @@ export const getProfile = async (req, res) => {
 
 export const deleteProfile = async (req, res) => {
   try {
-    const id = req.params?.id;
+    const loggedInUser = req.user;
 
-    await User.findByIdAndDelete(id);
+    const user = await User.findByIdAndDelete(loggedInUser._id);
 
-    res.status(httpStatus.OK).json({ message: "User deleted successfully!" });
+    const deletedConnections = await ConnectionRequest.deleteMany({
+      $or: [{ toUserId: loggedInUser._id }, { fromUserId: loggedInUser._id }],
+    });
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    res.status(httpStatus.OK).json({
+      message: "User account deleted successfully!",
+      // "logged in user": loggedInUser,
+      // "deleted user": user,
+      // "deleted connections": deletedConnections,
+    });
   } catch (error) {
     res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .status(500)
       .json({ message: "Something went wrong!", error: error.message });
   }
 };

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeUser } from "../store/userSlice";
 import { showToast } from "../store/toastSlice";
+import { removeConnections } from "../store/connectionSlice";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -24,6 +25,31 @@ const Navbar = () => {
 
       if (res.status === 200) {
         dispatch(removeUser());
+        dispatch(removeConnections());
+        dispatch(showToast({ message: res.data.message, type: "success" }));
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      dispatch(
+        showToast({
+          message: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      );
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_URL}/profiles/delete`,
+        { withCredentials: true }
+      );
+
+      if (res.status === 200) {
+        dispatch(removeUser());
+        dispatch(removeConnections());
         dispatch(showToast({ message: res.data.message, type: "success" }));
         navigate("/");
       }
@@ -80,7 +106,7 @@ const Navbar = () => {
                 </li>
 
                 <li>
-                  <button onClick={handleLogout} className="text-red-500">
+                  <button onClick={handleDelete} className="text-red-500">
                     Delete my account
                   </button>
                 </li>
