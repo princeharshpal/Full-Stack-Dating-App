@@ -65,12 +65,10 @@ const Navbar = () => {
               </div>
               <ul
                 tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-5 mt-5 w-52 p-4 shadow"
               >
                 <li>
-                  <Link to={"/profile"}>
-                    Profile
-                  </Link>
+                  <Link to={"/profile"}>Profile</Link>
                 </li>
 
                 <li>
@@ -79,6 +77,12 @@ const Navbar = () => {
 
                 <li>
                   <Link to={"/requests"}>Requests</Link>
+                </li>
+
+                <li>
+                  <button onClick={handleLogout} className="text-red-500">
+                    Delete my account
+                  </button>
                 </li>
 
                 <li>
