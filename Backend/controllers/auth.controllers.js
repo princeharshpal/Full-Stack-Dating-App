@@ -25,7 +25,10 @@ export const signUp = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(httpStatus.EXPECTATION_FAILED).json(errors);
+      return res.status(httpStatus.EXPECTATION_FAILED).json({
+        message: errors.array()[0].msg,
+        errors: errors.array(),
+      });
     }
 
     const { firstName, lastName, email, password, age, gender } = req.body;
