@@ -42,7 +42,7 @@ export const signUp = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await User.create({
+    const createdUser = await User.create({
       firstName,
       lastName,
       email,
@@ -51,9 +51,29 @@ export const signUp = async (req, res) => {
       gender,
     });
 
+    const { accessToken, refreshToken } = generateTokens({
+      _id: createdUser._id,
+    });
+
+    createdUser.refreshToken = refreshToken;
+    await createdUser.save();
+
     return res
       .status(httpStatus.CREATED)
-      .json({ message: "User created successfully!" });
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        user: createdUser,
+        message: "User created successfully!",
+      });
   } catch (error) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -108,7 +128,7 @@ export const logOutUser = async (req, res) => {
 
     await User.findByIdAndUpdate(id, {
       $set: {
-        refreshToken: undefined,
+        refreshToken: null,
       },
     });
 
