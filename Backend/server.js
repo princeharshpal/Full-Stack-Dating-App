@@ -37,10 +37,10 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("ERROR:", err.stack || err);
-  return res.status(500).json({
+  console.error("Global Error:", err);
+  res.status(err.code || 500).json({
     success: false,
-    message: "Something went wrong on the server",
+    message: err.message || "Internal Server Error",
   });
 });
 
