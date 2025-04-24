@@ -89,7 +89,9 @@ export const updatePasswordValidations = [
     .isLength({ min: 6 })
     .withMessage("Password is at least 6 characters long!")
     .isLength({ max: 50 })
-    .withMessage("Your Password is too long!"),
+    .withMessage("Your Password is too long!")
+    .isStrongPassword()
+    .withMessage("Your password is too weak!"),
 ];
 
 export const connectionRequestValidations = [

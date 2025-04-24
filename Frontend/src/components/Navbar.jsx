@@ -109,6 +109,10 @@ const Navbar = () => {
                 </li>
 
                 <li>
+                  <Link to={"/update-password"}>Update Password</Link>
+                </li>
+
+                <li>
                   <button
                     onClick={() => setShowDeleteModal(true)}
                     className="text-red-500"

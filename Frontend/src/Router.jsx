@@ -12,6 +12,7 @@ import Feed from "./components/Feed/Feed";
 import Profile from "./components/Profile/Profile";
 import Connections from "./components/Connections";
 import Requests from "./components/Requests";
+import UpdatePass from "./components/UpdatePass";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,18 +20,23 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/feed" 
-      // loader={Feed.loader} 
-      element={<Feed />} />
+      <Route
+        path="/feed"
+        // loader={Feed.loader}
+        element={<Feed />}
+      />
       <Route path="/profile" loader={Profile.loader} element={<Profile />} />
       <Route
         path="/connections"
         loader={Connections.loader}
         element={<Connections />}
       />
-      <Route path="/requests" 
-      // loader={Requests.loader}
-       element={<Requests />} />
+      <Route
+        path="/requests"
+        // loader={Requests.loader}
+        element={<Requests />}
+      />
+      <Route path="/update-password" element={<UpdatePass />} />
     </Route>
   )
 );
