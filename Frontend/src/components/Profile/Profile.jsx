@@ -8,7 +8,7 @@ const Profile = () => {
   const user = useLoaderData() || null;
 
   return (
-    <div className="flex flex-wrap justify-center items-start gap-5 mt-5">
+    <div className="lg:flex flex-wrap justify-center items-start gap-5 mt-5">
       {user ? (
         <Edit user={user} />
       ) : (

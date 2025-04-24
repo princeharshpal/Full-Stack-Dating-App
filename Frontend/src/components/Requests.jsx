@@ -52,41 +52,49 @@ const Requests = () => {
 
   return (
     <div>
-      <h1 className="text-2xl mb-10">Your Connection Requests</h1>
+      <h1 className="text-2xl mb-10 text-center sm:text-left">
+        Your Connection Requests
+      </h1>
 
       {requests && requests.length > 0 ? (
         requests.map((request) => (
           <div
             key={request._id}
-            className="bg-base-100 rounded-xl mb-2 flex items-center"
+            className="bg-base-100 rounded-xl mb-4 flex flex-col sm:flex-row items-center"
           >
-            <div className="h-40 w-40 overflow-hidden rounded-l-xl">
-              <img src={request.photoUrl} alt="photo" />
+            {/* Image container */}
+            <div className="w-full sm:w-44 h-52 sm:h-44 overflow-hidden rounded-t-xl sm:rounded-l-xl sm:rounded-tr-none">
+              <img
+                src={request.photoUrl}
+                alt="photo"
+                className="object-cover w-full h-full"
+              />
             </div>
 
-            <div className="flex items-center w-full justify-between px-5 py-2">
-              <div>
+            {/* Text and button section */}
+            <div className="flex flex-col sm:flex-row items-center w-full justify-between px-5 py-4 gap-4 sm:gap-0">
+              <div className="text-center sm:text-left w-full sm:w-8/12">
                 <h2 className="text-xl font-semibold">
                   {request.firstName} {request.lastName}
                 </h2>
-
                 <p>
                   {request.gender}, {request.age}
                 </p>
-
-                <p className="w-11/12 line-clamp-3">{request.about || "No about available"}</p>
+                <p className="line-clamp-3 mt-1 text-sm text-gray-400">
+                  {request.about || "No about available"}
+                </p>
               </div>
 
-              <div className="space-x-3 flex items-center">
+              <div className="flex justify-center sm:justify-end items-center gap-3 w-full sm:w-4/12">
                 <button
                   onClick={() => handleRequest("accepted", request._id)}
-                  className="btn btn-success"
+                  className="btn btn-success btn-sm sm:btn-md"
                 >
                   Accept
                 </button>
                 <button
                   onClick={() => handleRequest("rejected", request._id)}
-                  className="btn btn-error btn-outline"
+                  className="btn btn-error btn-outline btn-sm sm:btn-md"
                 >
                   Reject
                 </button>
@@ -95,7 +103,7 @@ const Requests = () => {
           </div>
         ))
       ) : (
-        <p className="text-xl">No Requests Yet!</p>
+        <p className="text-xl text-center">No Requests Yet!</p>
       )}
     </div>
   );

@@ -116,10 +116,10 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-4">
+    <div className="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-base-100 border border-base-300 p-6 rounded-box shadow-md"
+        className="w-full max-w-2xl bg-base-100 border border-base-300 p-6 sm:p-8 rounded-box shadow-md"
       >
         <h2 className="text-xl font-semibold text-center mb-6 text-white">
           Sign Up
@@ -153,8 +153,8 @@ const SignUp = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div className="w-1/2">
+          <div className="md:flex md:gap-4">
+            <div className="md:w-1/2 mb-4 md:mb-0">
               <Label htmlFor="age" required>
                 Age
               </Label>
@@ -168,7 +168,7 @@ const SignUp = () => {
               )}
             </div>
 
-            <div className="w-1/2">
+            <div className="md:w-1/2">
               <Label htmlFor="gender" required>
                 Gender
               </Label>

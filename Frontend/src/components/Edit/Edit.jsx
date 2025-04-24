@@ -110,7 +110,7 @@ const Edit = ({ user }) => {
   };
 
   return (
-    <div className="flex gap-5">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <Card user={watch()} />
 
       <div className="bg-base-100 p-5 rounded-md space-y-3">

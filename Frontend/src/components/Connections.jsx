@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, redirect } from "react-router-dom";
 import axios from "axios";
 import { addConnections } from "../store/connectionSlice";
 import { showToast } from "../store/toastSlice";
@@ -19,37 +19,45 @@ const Connections = () => {
 
   return (
     <div>
-      <h1 className="text-2xl mb-10">Your Connections</h1>
+      <h1 className="text-2xl mb-10 text-center sm:text-left">
+        Your Connections
+      </h1>
 
       {connections && connections.length > 0 ? (
         connections.map((connection, idx) => (
           <div
             key={idx}
-            className="bg-base-100 rounded-xl mb-2 flex items-center"
+            className="bg-base-100 rounded-xl mb-4 flex flex-col sm:flex-row items-center"
           >
-            <div className="h-40 w-40 overflow-hidden rounded-l-xl">
-              <img src={connection.photoUrl} alt="photo" />
+            {/* Image with fixed size and responsive priority */}
+            <div className="w-full sm:w-44 h-52 sm:h-44 overflow-hidden rounded-t-xl sm:rounded-l-xl sm:rounded-tr-none">
+              <img
+                src={connection.photoUrl}
+                alt="photo"
+                className="object-cover w-full h-full"
+              />
             </div>
 
-            <div className="flex items-center w-full justify-between px-5 py-2">
-              <div>
+            {/* Details section */}
+            <div className="flex flex-col sm:flex-row items-center justify-between w-full px-5 py-4 gap-4 sm:gap-0">
+              <div className="text-center sm:text-left w-full">
                 <h2 className="text-xl font-semibold">
                   {connection.firstName} {connection.lastName}
                 </h2>
 
                 <p>
-                  {connection.gender}
-                  {", "}
-                  {connection.age}
+                  {connection.gender}, {connection.age}
                 </p>
 
-                <p>{connection.about || "No about available"}</p>
+                <p className="line-clamp-3 text-sm text-gray-400 mt-1">
+                  {connection.about || "No about available"}
+                </p>
               </div>
             </div>
           </div>
         ))
       ) : (
-        <p className="text-xl">No Connections Yet!</p>
+        <p className="text-xl text-center">No Connections Yet!</p>
       )}
     </div>
   );
