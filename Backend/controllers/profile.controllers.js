@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { User } from "../models/user.models.js";
 import { validationResult } from "express-validator";
 import { ConnectionRequest } from "../models/connectionRequest.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const getProfile = async (req, res) => {
   try {
@@ -51,14 +52,28 @@ export const updateProfile = async (req, res) => {
 
     const id = req.params?.id;
 
-    const { firstName, lastName, about, photoUrl } = req.body;
+    const { firstName, lastName, about } = req.body;
 
-    const updateProfile = await User.findByIdAndUpdate(id, {
+    const updateData = {
       firstName,
       lastName,
       about,
-      photoUrl,
+    };
+
+    if (req.file) {
+      const photoUrl = await uploadOnCloudinary(req.file.path);
+      updateData.photoUrl = photoUrl;
+    }
+
+    const updateProfile = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
     });
+
+    if (!updateProfile) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "User not found!" });
+    }
 
     res
       .status(httpStatus.OK)

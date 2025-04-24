@@ -73,11 +73,6 @@ export const updateProfileValidations = [
     .withMessage("About section is required")
     .isLength({ max: 1000 })
     .withMessage("About can only written in 1000 letters!"),
-  body("photoUrl")
-    .isURL()
-    .withMessage("Invalid URL!")
-    .isLength({ max: 2048 })
-    .withMessage("Photo url is too long"),
 ];
 
 export const updatePasswordValidations = [

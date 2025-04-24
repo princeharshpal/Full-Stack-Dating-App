@@ -20,9 +20,20 @@ const Edit = ({ user }) => {
       .required("Last name is required")
       .min(3, "Last name should have at least 3 characters long!"),
     photoUrl: yup
-      .string()
-      .url("Photo URL must be valid")
-      .max(2048, "Photo URL is too long"),
+      .mixed()
+      .test("fileRequired", "Photo is required", (value) => value && value[0])
+      .test(
+        "fileSize",
+        "File size is too large",
+        (value) => !value || value[0].size <= 1048576 // 1MB max file size
+      )
+      .test(
+        "fileType",
+        "Unsupported file format",
+        (value) =>
+          !value ||
+          ["image/jpeg", "image/png", "image/jpg"].includes(value[0]?.type)
+      ),
     about: yup
       .string()
       .required("About section is required")
@@ -34,7 +45,7 @@ const Edit = ({ user }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting },
     watch,
     reset,
   } = useForm({
@@ -62,14 +73,37 @@ const Edit = ({ user }) => {
 
   const onSubmit = async (data) => {
     try {
+      const formData = new FormData();
+
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("about", data.about);
+
+      if (data.photoUrl[0]) {
+        formData.append("photo", data.photoUrl[0]);
+      }
+
       const res = await axios.patch(
         `${import.meta.env.VITE_URL}/profiles/edit/${user._id}`,
-        data,
-        { withCredentials: true }
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
       );
+
+      console.log(res);
 
       if (res.status === 200) {
         dispatch(showToast({ message: res.data.message, type: "success" }));
+        reset({
+          firstName: res.data.user.firstName,
+          lastName: res.data.user.lastName,
+          age: res.data.user.age,
+          gender: res.data.user.gender,
+          photoUrl: res.data.user.photoUrl,
+          about: res.data.user.about,
+        });
       }
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -84,7 +118,11 @@ const Edit = ({ user }) => {
       <div className="bg-base-100 p-5 rounded-md space-y-3">
         <h2 className="text-xl font-semibold text-center">Edit your profile</h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit(onSubmit)}
+          encType="multipart/form-data"
+        >
           <div className="flex flex-col gap-1">
             <label htmlFor="firstName" className="text-sm text-gray-400">
               First Name
@@ -152,7 +190,7 @@ const Edit = ({ user }) => {
             </label>
             <input
               id="photoUrl"
-              type="text"
+              type="file"
               {...register("photoUrl")}
               className="border border-gray-600 rounded-md px-2 py-1 outline-none"
             />
@@ -171,14 +209,17 @@ const Edit = ({ user }) => {
               {...register("about")}
               className="border border-gray-600 rounded-md px-2 py-1 outline-none"
             />
+            {errors.about && (
+              <p className="text-xs text-red-500">{errors.about.message}</p>
+            )}
           </div>
 
           <button
-            disabled={!isDirty}
+            disabled={!isDirty || isSubmitting}
             type="submit"
             className="btn btn-warning w-full mt-2"
           >
-            Save
+            {isSubmitting ? "  Saving... Please wait!" : "save"}
           </button>
         </form>
       </div>

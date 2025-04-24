@@ -7,10 +7,17 @@ import {
   updateProfile,
   deleteProfile,
 } from "../controllers/profile.controllers.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 router.get("/view", authUser, getProfile);
 
-router.patch("/edit/:id", authUser, updateProfileValidations, updateProfile);
+router.patch(
+  "/edit/:id",
+  authUser,
+  upload.single("photo"),
+  updateProfileValidations,
+  updateProfile
+);
 
 router.delete("/delete", authUser, deleteProfile);
 
