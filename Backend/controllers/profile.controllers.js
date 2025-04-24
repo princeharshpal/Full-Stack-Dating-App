@@ -39,7 +39,15 @@ export const deleteProfile = async (req, res) => {
 
     const user = await User.findByIdAndDelete(loggedInUser._id);
 
-    const deletedConnections = await ConnectionRequest.deleteMany({
+    if (user?.photoUrl) {
+      const publicId = extractPublicId(user.photoUrl);
+
+      if (publicId) {
+        const result = await cloudinary.uploader.destroy(publicId);
+      }
+    }
+
+    await ConnectionRequest.deleteMany({
       $or: [{ toUserId: loggedInUser._id }, { fromUserId: loggedInUser._id }],
     });
 
@@ -48,9 +56,6 @@ export const deleteProfile = async (req, res) => {
 
     res.status(httpStatus.OK).json({
       message: "User account deleted successfully!",
-      // "logged in user": loggedInUser,
-      // "deleted user": user,
-      // "deleted connections": deletedConnections,
     });
   } catch (error) {
     res

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { removeUser } from "../store/userSlice";
@@ -12,6 +12,7 @@ const Navbar = () => {
   const currentPath = location.pathname;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -40,8 +41,10 @@ const Navbar = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     try {
+      setShowDeleteModal(false);
+
       const res = await axios.delete(
         `${import.meta.env.VITE_URL}/profiles/delete`,
         { withCredentials: true }
@@ -106,7 +109,10 @@ const Navbar = () => {
                 </li>
 
                 <li>
-                  <button onClick={handleDelete} className="text-red-500">
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="text-red-500"
+                  >
                     Delete my account
                   </button>
                 </li>
@@ -132,6 +138,31 @@ const Navbar = () => {
           </>
         )}
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80">
+          <div className="bg-base-300 p-6 rounded-xl shadow-xl w-80">
+            <h3 className="text-xl font-semibold mb-4">Are you sure?</h3>
+            <p className="mb-6 text-sm text-gray-400">
+              This action will permanently delete your account.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="btn btn-sm btn-ghost"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="btn btn-sm bg-red-500 hover:bg-red-800"
+              >
+                Yes, delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
