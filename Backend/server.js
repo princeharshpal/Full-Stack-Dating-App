@@ -29,6 +29,21 @@ app.use("/profiles", profileRoutes);
 app.use("/requests", requestRoutes);
 app.use("/users", userRoutes);
 
+app.use((req, res, next) => {
+  return res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
+app.use((err, req, res, next) => {
+  console.error("ERROR:", err.stack || err);
+  return res.status(500).json({
+    success: false,
+    message: "Something went wrong on the server",
+  });
+});
+
 connectToDB()
   .then(() => {
     console.log("DATABASE CONNECTED...");
