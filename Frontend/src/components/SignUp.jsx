@@ -40,10 +40,7 @@ const SignUp = () => {
       gender: yup
         .string()
         .required("Gender is required!")
-        .min(4, "Gender should be at least 4 characters long!")
-        .max(6, "Gender could be maximum 6 characters long!"),
-      photoUrl: yup.string().url("Enter a valid URL!").nullable(),
-      about: yup.string(),
+        .oneOf(["male", "female", "others"], "Select a valid gender!"),
       email: yup
         .string()
         .email("Invalid email!")
@@ -76,8 +73,6 @@ const SignUp = () => {
       lastName: "",
       age: "",
       gender: "",
-      photoUrl: "",
-      about: "",
       email: "",
       password: "",
     },
@@ -225,28 +220,6 @@ const SignUp = () => {
                 </p>
               )}
             </div>
-          </div>
-
-          <div>
-            <Label htmlFor="photoUrl">Photo URL</Label>
-            <input
-              id="photoUrl"
-              className="input w-full focus:outline-none"
-              {...register("photoUrl")}
-            />
-            {errors.photoUrl && (
-              <p className="text-red-500 text-sm">{errors.photoUrl.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="about">About</Label>
-            <textarea
-              id="about"
-              className="textarea w-full focus:outline-none"
-              rows={3}
-              {...register("about")}
-            />
           </div>
         </div>
 

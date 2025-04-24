@@ -14,7 +14,7 @@ export const signUpValidations = [
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Invalid Email address!")
-    .isLength({ max: 20 })
+    .isLength({ max: 50 })
     .withMessage("Email length is too long!"),
   body("password")
     .notEmpty()
