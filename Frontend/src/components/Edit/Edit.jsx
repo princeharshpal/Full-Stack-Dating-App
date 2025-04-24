@@ -92,8 +92,6 @@ const Edit = ({ user }) => {
         }
       );
 
-      console.log(res);
-
       if (res.status === 200) {
         dispatch(showToast({ message: res.data.message, type: "success" }));
         reset({
