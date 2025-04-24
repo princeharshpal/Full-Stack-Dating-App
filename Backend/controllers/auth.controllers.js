@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user.models.js";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const generateTokens = (payload) => {
   try {
@@ -20,217 +21,185 @@ const generateTokens = (payload) => {
   }
 };
 
-export const signUp = async (req, res) => {
-  try {
-    const errors = validationResult(req);
+export const signUp = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      return res.status(httpStatus.EXPECTATION_FAILED).json({
-        message: errors.array()[0].msg,
-        errors: errors.array(),
-      });
-    }
-
-    const { firstName, lastName, email, password, age, gender } = req.body;
-    const user = await User.findOne({ email });
-
-    if (user) {
-      return res
-        .status(httpStatus.EXPECTATION_FAILED)
-        .json({ message: "User with this email already exists!" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const createdUser = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      age,
-      gender,
+  if (!errors.isEmpty()) {
+    return res.status(httpStatus.EXPECTATION_FAILED).json({
+      message: errors.array()[0].msg,
+      errors: errors.array(),
     });
+  }
 
-    const { accessToken, refreshToken } = generateTokens({
-      _id: createdUser._id,
-    });
+  const { firstName, lastName, email, password, age, gender } = req.body;
+  const user = await User.findOne({ email });
 
-    createdUser.refreshToken = refreshToken;
-    await createdUser.save();
-
+  if (user) {
     return res
-      .status(httpStatus.CREATED)
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 10 * 24 * 60 * 60 * 1000,
-      })
-      .json({
-        user: createdUser,
-        message: "User created successfully!",
-      });
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong!", error: error.message });
+      .status(httpStatus.EXPECTATION_FAILED)
+      .json({ message: "User with this email already exists!" });
   }
-};
 
-export const logInUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.findOne({ email }).select("+password");
+  const createdUser = await User.create({
+    firstName,
+    lastName,
+    email,
+    password: hashedPassword,
+    age,
+    gender,
+  });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(httpStatus.UNAUTHORIZED).json({
-        message: "Invalid email or password!",
-      });
-    }
+  const { accessToken, refreshToken } = generateTokens({
+    _id: createdUser._id,
+  });
 
-    const { accessToken, refreshToken } = generateTokens({
-      _id: user._id,
+  createdUser.refreshToken = refreshToken;
+  await createdUser.save();
+
+  return res
+    .status(httpStatus.CREATED)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      user: createdUser,
+      message: "User created successfully!",
     });
+});
 
-    user.refreshToken = refreshToken;
-    await user.save();
+export const logInUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
 
-    const loggedInUser = await User.findById(user._id);
+  const user = await User.findOne({ email }).select("+password");
 
-    res
-      .status(httpStatus.OK)
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 10 * 24 * 60 * 60 * 1000,
-      })
-      .json({ message: "User Logged in successfully!", user: loggedInUser });
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong!", error: error.message });
-  }
-};
-
-export const logOutUser = async (req, res) => {
-  try {
-    const id = req.user._id;
-
-    await User.findByIdAndUpdate(id, {
-      $set: {
-        refreshToken: null,
-      },
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(httpStatus.UNAUTHORIZED).json({
+      message: "Invalid email or password!",
     });
-
-    res
-      .status(httpStatus.OK)
-      .clearCookie("accessToken", {
-        httpOnly: true,
-        secure: true,
-      })
-      .clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: true,
-      })
-      .json({ message: "User logged out successfully!" });
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong!", error: error.message });
   }
-};
 
-export const refreshAccessToken = async (req, res) => {
-  try {
-    const incomingRefreshToken =
-      req.cookies?.refreshToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
+  const { accessToken, refreshToken } = generateTokens({
+    _id: user._id,
+  });
 
-    if (!incomingRefreshToken) {
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ message: "Unauthorized request!" });
-    }
+  user.refreshToken = refreshToken;
+  await user.save();
 
-    const decoded = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
+  const loggedInUser = await User.findById(user._id);
 
-    const user = await User.findById(decoded._id).select("+refreshToken");
+  res
+    .status(httpStatus.OK)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    })
+    .json({ message: "User Logged in successfully!", user: loggedInUser });
+});
 
-    if (!user) {
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ message: "Invalid refresh token!" });
-    }
+export const logOutUser = asyncHandler(async (req, res) => {
+  const id = req.user._id;
 
-    if (incomingRefreshToken !== user.refreshToken) {
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ message: "Refresh token is expired or used!" });
-    }
+  await User.findByIdAndUpdate(id, {
+    $set: {
+      refreshToken: null,
+    },
+  });
 
-    const { accessToken, refreshToken } = generateTokens({ _id: user._id });
+  res
+    .status(httpStatus.OK)
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+    })
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    })
+    .json({ message: "User logged out successfully!" });
+});
 
-    user.refreshToken = refreshToken;
-    await user.save();
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies?.refreshToken ||
+    req.header("Authorization")?.replace("Bearer ", "");
 
-    res
-      .status(httpStatus.OK)
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 10 * 24 * 60 * 60 * 1000,
-      })
-      .json({ message: "Access token refreshed successfully!" });
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong!", error: error.message });
+  if (!incomingRefreshToken) {
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({ message: "Unauthorized request!" });
   }
-};
 
-export const updatePassword = async (req, res) => {
-  try {
-    const { oldPassword, newPassword } = req.body;
+  const decoded = jwt.verify(
+    incomingRefreshToken,
+    process.env.REFRESH_TOKEN_SECRET
+  );
 
-    const user = await User.findById(req.user?._id).select("+password");
+  const user = await User.findById(decoded._id).select("+refreshToken");
 
-    const correctOldPass = await bcrypt.compare(oldPassword, user.password);
-
-    if (!correctOldPass) {
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ message: "Entered old password is incorrect!" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    user.password = hashedPassword;
-    await user.save();
-
-    res
-      .status(httpStatus.OK)
-      .json({ message: "Password updated successfully!" });
-  } catch (error) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Something went wrong!", error: error.message });
+  if (!user) {
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({ message: "Invalid refresh token!" });
   }
-};
+
+  if (incomingRefreshToken !== user.refreshToken) {
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({ message: "Refresh token is expired or used!" });
+  }
+
+  const { accessToken, refreshToken } = generateTokens({ _id: user._id });
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  res
+    .status(httpStatus.OK)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    })
+    .json({ message: "Access token refreshed successfully!" });
+});
+
+export const updatePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id).select("+password");
+
+  const correctOldPass = await bcrypt.compare(oldPassword, user.password);
+
+  if (!correctOldPass) {
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({ message: "Entered old password is incorrect!" });
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  res.status(httpStatus.OK).json({ message: "Password updated successfully!" });
+});
